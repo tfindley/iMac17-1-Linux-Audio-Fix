@@ -1,0 +1,147 @@
+context.modules = [
+    {
+        name = libpipewire-module-filter-chain
+        flags = [ nofail ]
+        args = {
+            "node.description": "iMac Speakers",
+            "media.name": "iMac Speakers",
+            "filter.graph": {
+                "nodes": [
+                    {
+                        "type": "lv2",
+                        "plugin": "https://chadmed.au/bankstown",
+                        "name": "bassex",
+                        "control": {
+                            "bypass": 0, "amt": 1, "sat_second": 1, "sat_third": 1,
+                            "blend": 1.0, "ceil": 100.0, "floor": 20.0, "final_hp": 100.0
+                        }
+                    },
+                    {
+                        "type": "lv2",
+                        "plugin": "http://lsp-plug.in/plugins/lv2/loud_comp_mono",
+                        "name": "ell",
+                        "control": { "enabled": 1, "input": 1.0, "fft": 2, "volume": -20.0 }
+                    },
+                    {
+                        "type": "lv2",
+                        "plugin": "http://lsp-plug.in/plugins/lv2/loud_comp_mono",
+                        "name": "elr",
+                        "control": { "enabled": 1, "input": 1.0, "fft": 2, "volume": -20.0 }
+                    },
+
+                    # --- FIR CONVOLVERS (Embeds 24dB LR4 Crossovers & EQ) ---
+                    {
+                        "type": "builtin",
+                        "label": "convolver",
+                        "name": "convLT",
+                        "config": {
+                            "filename": [ "@IRS_DIR@/Filters L Aug 14-MP-48k.wav" ],
+                            "channel": 0, "gain": 1.0
+                        }
+                    },
+                    {
+                        "type": "builtin",
+                        "label": "convolver",
+                        "name": "convRT",
+                        "config": {
+                            "filename": [ "@IRS_DIR@/Filters R Aug 14-MP-48k.wav" ],
+                            "channel": 0, "gain": 1.0
+                        }
+                    },
+                    {
+                        "type": "builtin",
+                        "label": "convolver",
+                        "name": "convLW",
+                        "config": {
+                            "filename": [ "@IRS_DIR@/Filters C2 Aug 16-MP-48k.wav" ],
+                            "channel": 0, "gain": 0.4
+                        }
+                    },
+                    {
+                        "type": "builtin",
+                        "label": "convolver",
+                        "name": "convRW",
+                        "config": {
+                            "filename": [ "@IRS_DIR@/Filters LFE Aug 16-MP-48k.wav" ],
+                            "channel": 0, "gain": 0.4
+                        }
+                    },
+
+                    # --- WOOFER PROTECTION DYNAMICS ---
+                    {
+                        "type": "lv2",
+                        "plugin": "http://lsp-plug.in/plugins/lv2/mb_compressor_stereo",
+                        "name": "woofer_bp",
+                        "control": {
+                            "enabled": 1, "mode": 0, "ce_0": 1, "sla_0": 5.0, "cr_0": 1.5,
+                            "al_0": 0.850, "at_0": 15.0, "rt_0": 120, "kn_0": 0.125,
+                            "cbe_1": 1, "sf_1": 300.0, "ce_1": 0, "cbe_2": 0, "ce_2": 0,
+                            "cbe_3": 0, "ce_3": 0, "cbe_4": 0, "ce_4": 0, "cbe_5": 0,
+                            "ce_5": 0, "cbe_6": 0, "ce_6": 0
+                        }
+                    },
+                    {
+                        "type": "lv2",
+                        "plugin": "http://lsp-plug.in/plugins/lv2/compressor_stereo",
+                        "name": "woofer_lim",
+                        "control": {
+                            "enabled": 1, "sla": 5.0, "al": 1.0, "at": 1.0, "rt": 100.0,
+                            "cr": 15.0, "kn": 0.5
+                        }
+                    }
+                ],
+                "links": [
+                    { "output": "bassex:out_l", "input": "ell:in" },
+                    { "output": "bassex:out_r", "input": "elr:in" },
+
+                    # --- DIRECT ROUTING TO TWEETER AND WOOFER CONVOLVERS ---
+                    { "output": "ell:out", "input": "convLT:In" },
+                    { "output": "ell:out", "input": "convLW:In" },
+                    { "output": "elr:out", "input": "convRT:In" },
+                    { "output": "elr:out", "input": "convRW:In" },
+
+                    # --- WOOFER DYNAMICS CHAIN ---
+                    { "output": "convLW:Out", "input": "woofer_bp:in_l" },
+                    { "output": "convRW:Out", "input": "woofer_bp:in_r" },
+                    { "output": "woofer_bp:out_l", "input": "woofer_lim:in_l" },
+                    { "output": "woofer_bp:out_r", "input": "woofer_lim:in_r" }
+                ],
+                "inputs": [ "bassex:in_l", "bassex:in_r" ],
+
+                # Tweeters: convLT:Out (FL), convRT:Out (FR) | Woofers: woofer_lim:out_l (RL), woofer_lim:out_r (RR)
+                "outputs": [ "convLT:Out", "convRT:Out", "woofer_lim:out_l", "woofer_lim:out_r" ],
+
+                "capture.volumes": [
+                    { "control": "ell:volume", "min": -47.5, "max": 0.0, "scale": "cubic" },
+                    { "control": "elr:volume", "min": -47.5, "max": 0.0, "scale": "cubic" }
+                ]
+            },
+            "capture.props": {
+                "node.name": "audio_effect.iMac convolver",
+                "media.class": "Audio/Sink",
+                "audio.channels": "2",
+                "audio.position": ["FL", "FR"],
+                "audio.allowed-rates": [48000],
+                "device.api": "dsp",
+                "node.virtual": "true",
+                "priority.session": 850,
+                "state.default-volume": 0.343,
+                "device.icon-name": "audio-speakers"
+            },
+            "playback.props": {
+                "node.name": "effect_output.iMac convolver",
+                "node.description": "iMac Speakers DSP Out",
+                "media.name": "iMac Speakers DSP Out",
+                "target.object": "alsa_output.pci-0000_00_1f.3.analog-surround-40",
+                "node.dont-fallback": "true",
+                "node.linger": "true",
+                "node.passive": "true",
+                "stream.dont-remix": "true",
+                "node.dont-remix": "true",
+                "audio.channels": "4",
+                "audio.allowed-rates": [48000],
+                "audio.position": ["FL", "FR", "RL", "RR"]
+            }
+        }
+    }
+]

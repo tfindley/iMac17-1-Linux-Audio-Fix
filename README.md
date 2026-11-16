@@ -24,7 +24,7 @@ PipeWire speaker tuning:
 | Distro | Status |
 |---|---|
 | Fedora 45 (GNOME, PipeWire 1.6) | ✅ tested on real hardware |
-| Ubuntu 26.04 | ⚠️ supported by the installer, not yet tested on hardware |
+| Ubuntu 26.04.1 (GNOME, PipeWire 1.6) | ✅ tested on real hardware |
 
 You need PipeWire and WirePlumber 0.5+. The installer refuses to run on any
 model other than `iMac17,1` unless you pass `--force`. The tuning was measured
@@ -56,8 +56,6 @@ what gets installed where.
 
 - **Headphone jack:** untested with the `imac27` option, which changes how the
   driver handles the headphone pin.
-- **Ubuntu:** the package names were checked against the 26.04 archive, but a
-  full install there hasn't been tried. Reports are welcome.
 - **Channel mapping:** if treble comes out of the woofers, the channels are
   swapped on your board. Uninstall and open an issue.
 

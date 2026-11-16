@@ -1,8 +1,8 @@
 # soundfix: iMac17,1 speaker tuning
 
 Restores proper speaker sound on a 27" 5K iMac (Late 2015, **iMac17,1**) on Linux
-with PipeWire. Fedora 45 is working and tested. Ubuntu 26.04 is supported by the
-script but untested.
+with PipeWire. Fedora 45 and Ubuntu 26.04.1 are both working and tested on the real
+machine.
 
 - `imac-audio-installer/`: the deliverable (installer script + bundled tuning).
 - `imac-audio-installer.tar.gz`: a packed copy of that folder for off-machine backup.

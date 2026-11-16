@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # iMac17,1 (27" 5K, Late 2015) speaker tuning installer for PipeWire on
-# Fedora (dnf) or Ubuntu (apt; package names checked for 26.04, untested there).
+# Fedora 45 (dnf) or Ubuntu 26.04 (apt); both tested on the real machine.
 #
 # What it does:
 #   1. Installs the LV2 plugins the tuning needs (dnf or apt, needs sudo).

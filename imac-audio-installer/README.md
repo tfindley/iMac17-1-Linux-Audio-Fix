@@ -6,7 +6,7 @@ Fedora or Ubuntu with PipeWire.
 | Distro | Status |
 |---|---|
 | Fedora 45 | tested on the real machine |
-| Ubuntu 26.04 | supported by the script; package names checked, not yet tested on hardware |
+| Ubuntu 26.04.1 | tested on the real machine |
 
 ## Why it's needed
 

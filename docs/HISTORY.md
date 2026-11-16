@@ -64,3 +64,15 @@ The original work was done in a single Claude Code session on 2026-11-14/15. Its
    - The apt code path was exercised with stub commands only; it is **not
      tested on real Ubuntu**.
 8. Added `CLAUDE.md` and this history for git.
+
+## 2026-11-16: Ubuntu tested on hardware
+
+9. Fresh Ubuntu 26.04.1 (kernel 7.0, PipeWire 1.6.2, WirePlumber 0.5.13):
+   - Before installing, checked that the debs ship every LV2 URI, control and
+     port the config uses (LSP 1.2.27, bankstown 1.1.0). `pulseaudio-utils`
+     doesn't pull in the PulseAudio daemon. The initramfs has no sound modules,
+     so no `update-initramfs` is needed.
+   - Ran the installer, rebooted, ran it again; no script changes needed. The
+     quirk applied (`imac27`, `line_outs=2`) and every check passed.
+   - The user confirmed by ear: music sounds right, and per-channel tones play
+     on all four channels.
